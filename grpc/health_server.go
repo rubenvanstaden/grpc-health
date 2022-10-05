@@ -17,7 +17,9 @@ type HealthService struct {
 
 func NewHealthService() *HealthService {
 	return &HealthService{
-		statusMap: map[string]pb.HealthCheckResponse_ServingStatus{"": pb.HealthCheckResponse_SERVING},
+		statusMap: map[string]pb.HealthCheckResponse_ServingStatus{
+			"": pb.HealthCheckResponse_SERVING,
+		},
 	}
 }
 

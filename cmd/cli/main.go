@@ -6,28 +6,17 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/rubenvanstaden/grpc-health/core"
+	"github.com/rubenvanstaden/grpc-health/grpc"
 )
 
 var (
-	statusCode int
-
 	flAddr        string
 	flService     string
 	flConnTimeout time.Duration
 	flRPCTimeout  time.Duration
 	flVerbose     bool
-)
-
-const (
-	StatusSuccess = 0
-	// StatusInvalidArguments indicates specified invalid arguments.
-	StatusInvalidArguments = 1
-	// StatusConnectionFailure indicates connection failed.
-	StatusConnectionFailure = 2
-	// StatusRPCFailure indicates rpc failed.
-	StatusRPCFailure = 3
-	// StatusUnhealthy indicates rpc succeeded but indicates unhealthy service.
-	StatusUnhealthy = 4
 )
 
 func init() {
@@ -43,11 +32,11 @@ func init() {
 
 	err := flagSet.Parse(os.Args[1:])
 	if err != nil {
-		os.Exit(StatusInvalidArguments)
+		os.Exit(core.StatusInvalidArguments)
 	}
 
 	argError := func(s string, v ...interface{}) {
-		os.Exit(StatusInvalidArguments)
+		os.Exit(core.StatusInvalidArguments)
 	}
 
 	if flAddr == "" {
@@ -72,25 +61,36 @@ func init() {
 
 func main() {
 
-	code := StatusSuccess
-	defer func() { os.Exit(code) }()
+	code := core.StatusSuccess
+	defer func() {
+		os.Exit(code)
+	}()
 
-	client := NewClient(flAddr)
+	flags := core.Flags{
+		Addr:        flAddr,
+		Service:     flService,
+		ConnTimeout: flConnTimeout,
+		RPCTimeout:  flRPCTimeout,
+		Verbose:     flVerbose,
+	}
+
+	client := grpc.NewClient(flags)
 	defer client.Close()
-	health := NewHealthClient(client)
+
+	health := grpc.NewHealthClient(client)
 
 	rpcStart := time.Now()
 
 	ctx, rpcCancel := context.WithTimeout(context.Background(), flRPCTimeout)
 	defer rpcCancel()
 
-	health.Check(ctx, flService)
+	code = health.Check(ctx, flService)
 
 	rpcDuration := time.Since(rpcStart)
 
-	if flVerbose {
+	if flags.Verbose {
 		log.Printf("time elapsed: connect=%v rpc=%v", client.ConnDuration, rpcDuration)
 	}
 
-	log.Printf("status code: %v", statusCode)
+	log.Printf("status code: %v", code)
 }
