@@ -12,3 +12,6 @@ protos:
 
 build:
 	go build -o bin/health-cli ./cmd/cli/*
+
+test:
+	go test -count=1 -run=Integration ./grpc/...
