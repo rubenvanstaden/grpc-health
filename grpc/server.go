@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "github.com/rubenvanstaden/grpc-health/pb"
+	pb "github.com/rubenvanstaden/grpc-health/grpc/pb"
 )
 
 type Server struct {

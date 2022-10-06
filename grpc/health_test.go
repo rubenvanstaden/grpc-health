@@ -7,7 +7,7 @@ import (
 
 	"github.com/rubenvanstaden/grpc-health/core"
 	"github.com/rubenvanstaden/grpc-health/grpc"
-	"github.com/rubenvanstaden/grpc-health/utils"
+	"github.com/rubenvanstaden/grpc-health/test"
 )
 
 const (
@@ -35,7 +35,7 @@ func TestIntegration_Health(t *testing.T) {
 	t.Run("GRPC", func(t *testing.T) {
 
 		code := client.Check(context.Background(), flags.Service)
-		utils.Equals(t, 0, code)
+		test.Equals(t, 0, code)
 
 	})
 }

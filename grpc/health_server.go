@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/rubenvanstaden/grpc-health/pb"
+	pb "github.com/rubenvanstaden/grpc-health/grpc/pb"
 )
 
 type HealthService struct {

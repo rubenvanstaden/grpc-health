@@ -1,3 +1,7 @@
+SHELL := /bin/bash
+
+INTEGRATION_TEST_PATH=./grpc/...
+
 fmt:
 	gofmt -l -s -w .
 
@@ -11,7 +15,10 @@ protos:
 		pb/*.proto
 
 build:
-	go build -o bin/health-cli ./cmd/cli/*
+	GOOS="linux" go build -o bin/health-cli ./cmd/*
 
-test:
-	go test -count=1 -run=Integration ./grpc/...
+test.integration:
+	go test -count=1 -run=Integration $(INTEGRATION_TEST_PATH)
+
+test.integration.debug:
+	go test -count=1 -run=Integration $(INTEGRATION_TEST_PATH) -v
